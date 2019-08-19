@@ -141,7 +141,7 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
         if not os.path.exists("checkpoint"):
             os.mkdir("checkpoint")
         if not os.path.exists(os.path.join("checkpoint", opt.dataset)):
-            os.mkdir("checkpoint/TNBC")
+            os.mkdir(os.path.join("checkpoint", opt.dataset))
         net_g_model_out_path = "checkpoint/{}/netG_model_epoch_{}.pth".format(opt.dataset, epoch)
         net_d_model_out_path = "checkpoint/{}/netD_model_epoch_{}.pth".format(opt.dataset, epoch)
         torch.save(net_g, net_g_model_out_path)
