@@ -47,7 +47,7 @@ if opt.cuda:
     torch.cuda.manual_seed(opt.seed)
 
 print('===> Loading datasets')
-root_path = "/dataset"
+root_path = "dataset/"
 train_set = get_training_set(root_path + opt.dataset, opt.direction)
 test_set = get_test_set(root_path + opt.dataset, opt.direction)
 training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batch_size, shuffle=True)
@@ -137,11 +137,11 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
     print("===> Avg. PSNR: {:.4f} dB".format(avg_psnr / len(testing_data_loader)))
 
     #checkpoint
-    if epoch % 10 == 0:
+    if epoch % 50 == 0:
         if not os.path.exists("checkpoint"):
-            os.makedirs("checkpoint", mode = 0o777)
+            os.mkdir("checkpoint")
         if not os.path.exists(os.path.join("checkpoint", opt.dataset)):
-            os.makedirs(os.path.join("checkpoint", opt.dataset), mode = 0o777)
+            os.mkdir(os.path.join("checkpoint", opt.dataset))
         net_g_model_out_path = "checkpoint/{}/netG_model_epoch_{}.pth".format(opt.dataset, epoch)
         net_d_model_out_path = "checkpoint/{}/netD_model_epoch_{}.pth".format(opt.dataset, epoch)
         torch.save(net_g, net_g_model_out_path)
