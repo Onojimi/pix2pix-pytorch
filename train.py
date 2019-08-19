@@ -47,7 +47,7 @@ if opt.cuda:
     torch.cuda.manual_seed(opt.seed)
 
 print('===> Loading datasets')
-root_path = "dataset/"
+root_path = "dataset"
 train_set = get_training_set(root_path + opt.dataset, opt.direction)
 test_set = get_test_set(root_path + opt.dataset, opt.direction)
 training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batch_size, shuffle=True)
