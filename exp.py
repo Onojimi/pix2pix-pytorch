@@ -1,3 +1,3 @@
 import os 
 
-os.mkdir("checkpoint/TNBC")
+os.mkdir(os.path.join("checkpoint", "TNBC"))
