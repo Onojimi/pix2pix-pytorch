@@ -137,7 +137,7 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
         input, target = batch[0].to(device), batch[1].to(device)
         prediction = net_g(input)
         mse = criterionMSE(prediction, target)
-        mset += mse
+        mse_total += mse
         psnr = 10 * log10(1 / mse.item())
         avg_psnr += psnr
     
