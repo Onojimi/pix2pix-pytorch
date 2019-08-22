@@ -15,7 +15,7 @@ class DatasetFromFolder(data.Dataset):
         super(DatasetFromFolder, self).__init__()
         self.images_path = join(image_dir, "images")
         self.masks_path = join(image_dir, "masks")
-        self.image_filenames = [x for x in listdir(self.a_path) if is_image_file(x)]
+        self.image_filenames = [x for x in listdir(self.images_path) if is_image_file(x)]
 
         transform_list = [transforms.ToTensor(),
                           transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
