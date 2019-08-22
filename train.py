@@ -48,10 +48,11 @@ if opt.cuda:
 
 print('===> Loading datasets')
 root_path = "dataset/"
-train_set = get_training_set(root_path + opt.dataset, opt.direction)
-test_set = get_test_set(root_path + opt.dataset, opt.direction)
+train_set = get_training_set(root_path + opt.dataset)
+val_set = get_val_set(root_path + opt.dataset)
+
 training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batch_size, shuffle=True)
-testing_data_loader = DataLoader(dataset=test_set, num_workers=opt.threads, batch_size=opt.test_batch_size, shuffle=False)
+val_data_loader = DataLoader(dataset=val_set, num_workers=opt.threads, batch_size=opt.test_batch_size, shuffle=False)
 
 device = torch.device("cuda:0" if opt.cuda else "cpu")
 
@@ -127,17 +128,19 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
 
     # test
     avg_psnr = 0
-    for batch in testing_data_loader:
+    mset = 0
+    for batch in val_data_loader:
         input, target = batch[0].to(device), batch[1].to(device)
-
         prediction = net_g(input)
         mse = criterionMSE(prediction, target)
+        mset += mse
         psnr = 10 * log10(1 / mse.item())
         avg_psnr += psnr
-    print("===> Avg. PSNR: {:.4f} dB".format(avg_psnr / len(testing_data_loader)))
+    print("===> Avg. PSNR: {:.4f} dB, Avg. MSEloss:{:.4f}".format(avg_psnr / len(testing_data_loader),
+                                                                  mse.item() / len(testing_data_loader)))
 
     #checkpoint
-    if epoch % 50 == 0:
+    if epoch % 10 == 0:
         if not os.path.exists("checkpoint"):
             os.mkdir("checkpoint")
         if not os.path.exists(os.path.join("checkpoint", opt.dataset)):
