@@ -136,8 +136,8 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
         mset += mse
         psnr = 10 * log10(1 / mse.item())
         avg_psnr += psnr
-    print("===> Avg. PSNR: {:.4f} dB, Avg. MSEloss:{:.4f}".format(avg_psnr / len(testing_data_loader),
-                                                                  mse.item() / len(testing_data_loader)))
+    print("===> Avg. PSNR: {:.4f} dB, Avg. MSEloss:{:.4f}".format(avg_psnr / len(val_data_loader),
+                                                                  mse.item() / len(val_data_loader)))
 
     #checkpoint
     if epoch % 10 == 0:
