@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 
 from networks import define_G, define_D, GANLoss, get_scheduler, update_learning_rate
-from data import get_training_set, get_test_set
+from data import get_training_set, get_val_set
 
 # Training settings
 parser = argparse.ArgumentParser(description='pix2pix-pytorch-implementation')
