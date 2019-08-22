@@ -78,6 +78,8 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
     # train
     for iteration, batch in enumerate(training_data_loader, 1):
         # forward
+        net_g.train()
+        
         real_a, real_b = batch[0].to(device), batch[1].to(device)
         fake_b = net_g(real_a)
 
@@ -133,9 +135,11 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
     # test
     avg_psnr = 0
     mse_total = 0
+    net_g.eval()
     for batch in val_data_loader:
         input, target = batch[0].to(device), batch[1].to(device)
-        prediction = net_g(input)
+        with torch.no_grad():
+            prediction = net_g(input)
         mse = criterionMSE(prediction, target)
         mse_total += mse
         psnr = 10 * log10(1 / mse.item())
