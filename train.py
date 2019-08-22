@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description='pix2pix-pytorch-implementation')
 parser.add_argument('--dataset', required=True, help='facades')
 parser.add_argument('--batch_size', type=int, default=1, help='training batch size')
 parser.add_argument('--test_batch_size', type=int, default=1, help='testing batch size')
-parser.add_argument('--direction', type=str, default='b2a', help='a2b or b2a')
+
 parser.add_argument('--input_nc', type=int, default=3, help='input image channels')
 parser.add_argument('--output_nc', type=int, default=3, help='output image channels')
 parser.add_argument('--ngf', type=int, default=64, help='generator filters in first conv layer')
@@ -69,6 +69,10 @@ optimizer_g = optim.Adam(net_g.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999)
 optimizer_d = optim.Adam(net_d.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 net_g_scheduler = get_scheduler(optimizer_g, opt)
 net_d_scheduler = get_scheduler(optimizer_d, opt)
+
+val_len = len(val_data_loader)
+max_psnr = 0
+cnt_epoch = 0
 
 for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
     # train
@@ -128,7 +132,7 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
 
     # test
     avg_psnr = 0
-    mset = 0
+    mse_total = 0
     for batch in val_data_loader:
         input, target = batch[0].to(device), batch[1].to(device)
         prediction = net_g(input)
@@ -136,9 +140,22 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
         mset += mse
         psnr = 10 * log10(1 / mse.item())
         avg_psnr += psnr
-    print("===> Avg. PSNR: {:.4f} dB, Avg. MSEloss:{:.4f}".format(avg_psnr / len(val_data_loader),
-                                                                  mse.item() / len(val_data_loader)))
-
+    
+    avg_psnr/=val_len
+    avg_mse = mse_total/val_len
+    
+    print("===> Avg. PSNR: {:.4f} dB, Avg. MSEloss:{:.4f}".format(avg_psnr,avg_mse))
+    
+    if avg_psnr>max_psnr:
+        max_psnr = avg_psnr
+        cnt_epoch = epoch
+    elif epoch - cnt_epoch >10:
+        try:
+            sys.exit(0)
+        except:
+            print("Early stop, max psnr is {} at epoch {}".format(max_psnr, cnt_epoch))
+    
+    
     #checkpoint
     if epoch % 10 == 0:
         if not os.path.exists("checkpoint"):
